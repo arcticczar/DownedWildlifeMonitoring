@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.db import models
+from django.utils import timezone
 
 from lookup_tables.models import *
 # Create your models here.
@@ -8,7 +9,7 @@ from lookup_tables.models import *
 enclosure_list = (('A','A'),('B','B') )
 
 class BurrowMonitoring(models.Model):
-    monitoring_date = models.DateField(default=date.today)
+    monitoring_date = models.DateField(default=timezone.now)
     enclosure = models.CharField(max_length=1, choices = enclosure_list)
     burrow_num = models.PositiveSmallIntegerField()
     tootpick_activity = models.BooleanField(default=False)
@@ -19,7 +20,7 @@ class BurrowMonitoring(models.Model):
     nest_material_present = models.BooleanField(default=False)
     ant_activity = models.BooleanField(default=False)
     other_activity = models.BooleanField(default=False)
-    notes = models.TextField()
+    notes = models.TextField(null=True,blank=True)
 
     
     def __str__(self):
@@ -27,20 +28,20 @@ class BurrowMonitoring(models.Model):
         return self.MonitorID
 
 class FenceCheck(models.Model):
-    fence_check_date = models.DateField(default=date.today)
+    fence_check_date = models.DateField(default=timezone.now)
     enclosure = models.CharField(max_length=1, choices = enclosure_list)
     culverts_sound = models.BooleanField(default=True)
     fenceline_sound = models.BooleanField(default=True)
     hood_sound = models.BooleanField(default=True)
     gate_sound = models.BooleanField(default=True)
-    notes = models.TextField()
+    notes = models.TextField(null=True,blank=True)
 
     def __str__(self):
         fenceID = str(enclosure)+str(fence_check_date)
         return self.fenceID
     
 class SoundCheck(models.Model):
-    sound_check_date = models.DateField(default=date.today)
+    sound_check_date = models.DateField(default=timezone.now)
     enclosure = models.CharField(max_length=1, choices = enclosure_list)
     battery = models.IntegerField()
     battery2 = models.IntegerField()
@@ -51,21 +52,22 @@ class SoundCheck(models.Model):
         return self.soundID
 
 class GeneralNotes(models.Model):
-    note_date = models.DateField(default=date.today)
-    makamakaole_notes = models.TextField()
+    note_date = models.DateField(default=timezone.now)
+    makamakaole_notes = models.TextField(null=True,blank=True)
 
 class Outplanting(models.Model):
-    outplanting_date = models.DateField(default=date.today)
+    outplanting_date = models.DateField(default=timezone.now)
     enclosure = models.CharField(max_length=1, choices = enclosure_list)
     plant_species = models.ForeignKey(PlantSpecies)
     number = models.PositiveIntegerField()
-    notes = models.TextField()
+    notes = models.TextField(null=True,blank=True)
 
 
 class NightSurvey(models.Model):
-    survey_date = models.DateField(default=date.today)
+    survey_date = models.DateField(default=timezone.now)
     start_time = models.TimeField()
     end_time = models.TimeField()
+    loc = models.PointField(null=True,blank=True)
     location_coordinates_x = models.DecimalField(max_digits=20, decimal_places=10)
     location_coordinates_y = models.DecimalField(max_digits=20, decimal_places=10)
     location_text = models.ForeignKey(Site)
@@ -82,7 +84,7 @@ class NightSurvey(models.Model):
     survey_quality = models.PositiveIntegerField()
     visibility = models.PositiveIntegerField()
     ceiling = models.PositiveIntegerField()
-    comments = models.TextField()
+    comments = models.TextField(null=True,blank=True)
 
     def __str__(self):
         return self.survey_date
@@ -99,5 +101,16 @@ class NightSurveyObservations():
     elevation = models.CharField(max_length=20, choices = elevation)
     behavior = models.CharField(max_length=20, choices = behavior)
     flight_direction = models.ForeignKey(Direction)
-    notes = models.TextField()
+    notes = models.TextField(null=True,blank=True)
     
+class BANOControl(models.Model):
+    control_date = models.DateField(default = timezone.now)
+    staff1 = models.ForeignKey(Personnel, related_name="obs1")
+    staff2 = models.ForeignKey(Personnel, related_name="obs2")
+    start_time = models.TimeField()
+    end_time = models.TimeField(default= timezone.now)
+    loc = models.PointField(null=True,blank=True)
+    BANO_observerd = models.PositiveIntegerField()
+    BANO_controlled = models.PositiveIntegerField()
+    notes = models.TextField(null=True,blank=True)
+

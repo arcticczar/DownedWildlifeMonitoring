@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.gis import admin
 from django.apps import apps
 
 app = apps.get_app_config('lookup_tables')

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models
 
 # Create your models here.
 class SizeClass(models.Model):
@@ -38,7 +39,7 @@ class PlantSpecies(models.Model):
     status = models.CharField(max_length=200)
     family = models.CharField(max_length=200)
     distribution = models.CharField(max_length=200)
-    notes = models.CharField(max_length=200)
+    notes = models.CharField(max_length=200, null=True,blank=True)
 
     def __str__(self):
         return self.scientific_name
@@ -65,7 +66,6 @@ class Personnel(models.Model):
     initials = models.CharField(max_length=20)
     staff_type = models.CharField(max_length=50)
     hire_date = models.DateField()
-    affiliation = models.CharField(max_length=200)
     active = models.BooleanField()
 
     def __str__(self):
@@ -78,16 +78,21 @@ class Canine(models.Model):
         return self.name
     
 class Site(models.Model):
+    loc = models.PolygonField(null=True,blank=True)
     locations = models.CharField(max_length=200)
+    short = models.CharField(max_length=20)
 
     def __str__(self):
         return self.locations
 
 class Infrastructure(models.Model):
+    loc = models.PointField(null=True,blank=True)
     name = models.CharField(max_length=200)
-    physical_phase = models.ForeignKey(Site, related_name='loc')
-    phase = models.ForeignKey(Site, related_name='own')
+    physical_phase = models.ForeignKey(Site, related_name='geographic_location')
+    phase = models.ForeignKey(Site, related_name='owner')
     notes = models.TextField()
+    latitude = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
 
     def __str__(self):
         return str(self.phase) + self.name
@@ -131,4 +136,28 @@ class BandColor(models.Model):
     def __str__(self):
         return self.color_text
 
+class RandomPoints(models.Model):
+    point_id = models.AutoField(primary_key=True)
+    loc = models.PointField(null=True,blank=True)
+    phase = models.ForeignKey(Site)
+    near = models.ForeignKey(Infrastructure)
+    notes = models.TextField(null=True,blank=True)
+
+    def __str__(self):
+        return self.point_id
+
+class SearchArea(models.Model):
+    loc = models.MultiPolygonField()
+    site = models.ForeignKey(Site)
+    turbine = models.ForeignKey(Infrastructure)
+    to_10 = models.DecimalField(max_digits=20, decimal_places=10)
+    to_20 = models.DecimalField(max_digits=20, decimal_places=10)
+    to_30 = models.DecimalField(max_digits=20, decimal_places=10)
+    to_40 = models.DecimalField(max_digits=20, decimal_places=10)
+    to_50 = models.DecimalField(max_digits=20, decimal_places=10)
+    to_60 = models.DecimalField(max_digits=20, decimal_places=10)
+    to_70 = models.DecimalField(max_digits=20, decimal_places=10)
+    to_80 = models.DecimalField(max_digits=20, decimal_places=10)
+    total_searchable = models.DecimalField(max_digits=20, decimal_places=10)
+    notes = models.TextField(null=True,blank=True)
 
