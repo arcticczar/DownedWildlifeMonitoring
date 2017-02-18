@@ -19,8 +19,8 @@ class SpeciesDef(models.Model):
     common_name=models.CharField(max_length=200)
     scientific_name=models.CharField(max_length=200)
     species_code=models.CharField(max_length=10)
-    species_status=models.ForeignKey(Status, on_delete=models.CASCADE)
-    size_class=models.ForeignKey(SizeClass, on_delete=models.CASCADE)
+    species_status=models.ForeignKey(Status)
+    size_class=models.ForeignKey(SizeClass)
 
     def __str__(self):
         return self.common_name
@@ -30,7 +30,6 @@ class Age(models.Model):
 
     def __str__(self):
         return self.age_text
-    
 
 class PlantSpecies(models.Model):
     common_name = models.CharField(max_length=200)
@@ -56,6 +55,7 @@ class Bait(models.Model):
     bait_text=models.CharField(max_length=200)
     target_species=models.ManyToManyField(SpeciesDef)
 
+
     def __str__(self):
         return self.bait_text
 
@@ -66,6 +66,8 @@ class Personnel(models.Model):
     initials = models.CharField(max_length=20)
     staff_type = models.CharField(max_length=50)
     hire_date = models.DateField()
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
     active = models.BooleanField()
 
     def __str__(self):

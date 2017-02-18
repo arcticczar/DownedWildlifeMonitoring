@@ -2,8 +2,9 @@ from datetime import date
 
 from django.db import models
 from django.utils import timezone
+from django.contrib.gis.db import models
 
-from lookup_tables.models import *
+from lookup_tables.models import PlantSpecies, Site, Direction, SpeciesDef, Personnel
 # Create your models here.
 
 enclosure_list = (('A','A'),('B','B') )
@@ -12,7 +13,7 @@ class BurrowMonitoring(models.Model):
     monitoring_date = models.DateField(default=timezone.now)
     enclosure = models.CharField(max_length=1, choices = enclosure_list)
     burrow_num = models.PositiveSmallIntegerField()
-    tootpick_activity = models.BooleanField(default=False)
+    toothpick_activity = models.BooleanField(default=False)
     scent_activity = models.BooleanField(default=False)
     burrow_opened = models.BooleanField(default=False)
     feather_activity = models.BooleanField(default=False)
@@ -58,7 +59,7 @@ class GeneralNotes(models.Model):
 class Outplanting(models.Model):
     outplanting_date = models.DateField(default=timezone.now)
     enclosure = models.CharField(max_length=1, choices = enclosure_list)
-    plant_species = models.ForeignKey(PlantSpecies)
+    plant_species = models.ForeignKey(PlantSpecies, related_name="plants")
     number = models.PositiveIntegerField()
     notes = models.TextField(null=True,blank=True)
 
@@ -70,7 +71,7 @@ class NightSurvey(models.Model):
     loc = models.PointField(null=True,blank=True)
     location_coordinates_x = models.DecimalField(max_digits=20, decimal_places=10)
     location_coordinates_y = models.DecimalField(max_digits=20, decimal_places=10)
-    location_text = models.ForeignKey(Site)
+    location_text = models.ForeignKey(Site, related_name="site")
     sublocation = models.CharField(max_length=100)
     auditory_minutes_surveyed = models.PositiveIntegerField()
     binocular_minutes_surveyed = models.PositiveIntegerField()
@@ -79,7 +80,7 @@ class NightSurvey(models.Model):
     observer2 = models.OneToOneField(Personnel, related_name='second')
     cloud_cover = models.PositiveIntegerField()
     wind_speed = models.PositiveIntegerField()
-    wind_dir = models.ForeignKey(Direction)
+    wind_dir = models.ForeignKey(Direction, related_name="dir")
     precipitation = models.PositiveIntegerField()
     survey_quality = models.PositiveIntegerField()
     visibility = models.PositiveIntegerField()
@@ -92,15 +93,15 @@ class NightSurvey(models.Model):
 elevation = (('Above','Above'),('Below','Below'),('Same','Same') )
 behavior = (('transit', 'Transit'),('Circling','Circling'))
 
-class NightSurveyObservations():
-    parent_survey = models.ForeignKey(NightSurvey)
+class NightSurveyObservations(models.Model):
+    parent_survey = models.ForeignKey(NightSurvey, related_name="night_survey")
     observation_time = models.TimeField()
-    species = models.ForeignKey(SpeciesDef)
+    species = models.ForeignKey(SpeciesDef, related_name="species_def")
     count = models.PositiveIntegerField()
     quadrat = models.PositiveIntegerField()
     elevation = models.CharField(max_length=20, choices = elevation)
     behavior = models.CharField(max_length=20, choices = behavior)
-    flight_direction = models.ForeignKey(Direction)
+    flight_direction = models.ForeignKey(Direction, related_name="direction")
     notes = models.TextField(null=True,blank=True)
     
 class BANOControl(models.Model):
