@@ -1,0 +1,18 @@
+{% load app_filters %}
+
+<h2></h2>
+	<section>
+	{% if model %}
+		<h3>{{ source|return_app_name }}</h3>
+		<ul>
+
+		</ul>
+	</section>
+		<section>
+			{%  for obj in model %}
+			<li>{{ obj.name|return_model_name}}
+			{% endfor %}
+		</section>
+	{% else %}
+	 <p> No Data </p>
+	 {% endif %}

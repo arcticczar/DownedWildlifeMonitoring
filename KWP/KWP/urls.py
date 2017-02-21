@@ -16,11 +16,14 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+from lookup_tables.views import lookup_index, sizes
 from Makamakaole.views import index
 from general.views import homepage
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', homepage),
-    url(r'^index/', index)
+    url(r'^index/', index),
+    url(r'^lookup/$', lookup_index),
+    url(r'^sizes/', sizes)
 ]

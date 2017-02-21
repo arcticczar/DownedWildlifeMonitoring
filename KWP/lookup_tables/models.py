@@ -96,7 +96,7 @@ class Infrastructure(models.Model):
     elevation = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
 
     def __str__(self):
-        return str(self.phase) +'-'+ self.name
+        return self.phase.short +'-'+ self.name
 
 class TrapType(models.Model):
     trap_type_text = models.CharField(max_length=200, unique=True)
@@ -159,6 +159,8 @@ class SearchArea(models.Model):
     from_50_to_60 = models.DecimalField(max_digits=20, decimal_places=10, null=True,blank=True)
     from_60_to_70 = models.DecimalField(max_digits=20, decimal_places=10, null=True,blank=True)
     from_70_to_80 = models.DecimalField(max_digits=20, decimal_places=10, null=True,blank=True)
-    total_searchable = models.DecimalField(max_digits=20, decimal_places=10)
+    total_searchable = models.DecimalField(max_digits=20, decimal_places=10, null=True,blank=True)
     notes = models.TextField(null=True,blank=True)
 
+    def __str__(self):
+        return self.site.short+'-'+self.turbine.name

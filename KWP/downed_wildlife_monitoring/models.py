@@ -7,7 +7,16 @@ from django.utils import timezone
 from django.contrib.gis.db import models
 
 
-from lookup_tables.models import Personnel, Canine, Age, Infrastructure, Direction, Weather,SpeciesDef, Site, BandColor
+from lookup_tables.models import (Personnel,
+                                    Canine,
+                                    Age,
+                                    Infrastructure,
+                                    Direction,
+                                    Weather,
+                                    SpeciesDef,
+                                    Site,
+                                    BandColor,
+                                    RandomPoints)
 
 SearchType = (('Visual','Visual'),('Canine','Canine'))
 SearchIncidental = (('Search','Search'),('Incidental','Incidental'))
@@ -83,6 +92,9 @@ class ActionsTaken(models.Model):
     event_time = models.DateTimeField()
     action = models.TextField()
 
+    def __str__(self):
+        return self.parent.ID()+'-'+self.event_time
+
 class NeneSurvey(models.Model):
     date = models.DateField(default=timezone.now)
     site = models.ForeignKey(Site)
@@ -93,7 +105,7 @@ class NeneSurvey(models.Model):
     notes = models.TextField(null=True,blank=True)
 
     def __str__(self):
-        return str(self.date) + str(self.site)
+        return str(self.date) +'-'+ self.site.short
 
 class CareSetUp(models.Model):
     loc = models.PointField(null=True,blank=True)
@@ -151,7 +163,7 @@ class CareMonitoring(models.Model):
     observer = models.ForeignKey(Personnel)
 
     def __str__(self):
-        return str(self.parent)+str(self.monitor_date)
+        return self.parent.trial+self.parent.carcass_number+'_'+str(self.monitor_date)
 
 class KWPISearching(models.Model):
     monitor_date = models.DateField(default=timezone.now)
@@ -230,7 +242,7 @@ class SEEFMaster(models.Model):
     latitude = models.DecimalField(max_digits=20, decimal_places=10)
     longitude = models.DecimalField(max_digits=20, decimal_places=10)
     distance = models.DecimalField(max_digits=6, decimal_places=2)
-    point_id = models.PositiveIntegerField()
+    point_id = models.ForeignKey(RandomPoints)
     searcher = models.ForeignKey(Personnel, related_name='searcher')
     canine = models.ForeignKey(Canine)
     veg_type = models.CharField(max_length=50)
@@ -238,7 +250,7 @@ class SEEFMaster(models.Model):
     notes = models.TextField(null=True,blank=True)
 
     def __str__(self):
-        return str(self.trial_date)+str(self.site)+str(self.turbine)+str(self.point_id)
+        return str(self.trial_date)+self.site.short+self.turbine.name+self.point_id.point_id
 
 class SEEFReporting(models.Model):
 	trial_date = models.DateField(default = timezone.now)

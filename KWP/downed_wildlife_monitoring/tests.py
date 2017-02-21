@@ -1,24 +1,26 @@
 from datetime import date
-import datetime
 
 from django.test import TestCase
 
 # Create your tests here.
 from lookup_tables.models import *
-from .models import *
+from downed_wildlife_monitoring.models import *
 
 import datetime
+
 #Build lookup_tables
 
-
 defaultSizeClass = SizeClass(size_txt = 'Hugemongous')
+
 defaultStatus = Status(status_txt = 'sneaky')
+
 defaultSpecies = SpeciesDef(common_name = 'Schmoo',
 							scientific_name = 'Schmoo deliciousii',
 							species_code = 'smoo',
 							species_status = defaultStatus,
 							size_class=defaultSizeClass)
 defaultAge = Age(age_text = 'old AF')
+
 defaultPlantSpecies = PlantSpecies(common_name = 'Money Tree',
 									hawaiian_name = 'none',
 									scientific_name = 'skrillicus maximus',
@@ -63,7 +65,7 @@ defaultNightSurvey_Distance = NightSurvey_Distance(distance_range = "10-20m")
 defaultBandColor = BandColor(color_text = "Aqua")
 
 
-
+#build Downed Wildlife tables
 defaultDWL = DownedWildlifeMonitoring(loc = '0101000020E6100000C5E6BD6F8F9163C0A272078CA1CF3440',
 													 discovery_date= '2016-05-05',
 													 discovered_by = defaultPersonnel ,
@@ -105,6 +107,29 @@ defaultDWL = DownedWildlifeMonitoring(loc = '0101000020E6100000C5E6BD6F8F9163C0A
 													 weather_TOD = 'Unknown',
 													 outside = False)
 
+defaultActionsTaken = ActionsTaken(parent=defaultDWL,
+									event_time = datetime.datetime.now(),
+									action = 'Downed wildlife discovered by Teresa Gajate.  Mstelmach Notified.')
+
+
+print (defaultSizeClass)
+print (defaultStatus)
+print (defaultSpecies)
+print (defaultAge)
+print (defaultPlantSpecies)
+print (defaultDirection)
+print (defaultBait)
+print (defaultPersonnel)
+print (defaultCanine)
+print (defaultSite)
+print (defaultInfrastructure)
+print (defalutTrapType)
+print (defaultWeather)
+print (defaultNightSurvey_Behavior)
+print (defaultNightSurvey_Elevation)
+print (defaultNightSurvey_Distance)
+print (defaultBandColor)
+print (defaultDWL)
 
 class DownedWildlifeTestCase(TestCase):
 	pass
