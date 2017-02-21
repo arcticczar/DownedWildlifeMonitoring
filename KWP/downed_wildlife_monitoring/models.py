@@ -7,14 +7,13 @@ from django.utils import timezone
 from django.contrib.gis.db import models
 
 
-from lookup_tables.models import *
+from lookup_tables.models import Personnel, Canine, Age, Infrastructure, Direction, Weather,SpeciesDef, Site, BandColor
 
 SearchType = (('Visual','Visual'),('Canine','Canine'))
 SearchIncidental = (('Search','Search'),('Incidental','Incidental'))
 Sex = (('Male','Male'),('Female','Female'),('Unknown','Unknown'))
 Condition = (('Alive','Alive'),('Dead','Dead'))
 
-# Create your models here.
 class DownedWildlifeMonitoring(models.Model):
     loc = models.PointField(null=True,blank=True)
     discovery_date = models.DateField(default=timezone.now)
@@ -55,14 +54,29 @@ class DownedWildlifeMonitoring(models.Model):
     time_responded = models.DateTimeField(null=True,blank=True)
     time_collected = models.DateTimeField(null=True,blank=True)
     date_last_searched = models.DateField()
-    weather_TOD = models.CharField(max_length=200)
+    weather_TOD = models.CharField(default='unknown',max_length=200, null=True, blank=True)
     outside = models.BooleanField()
 
     def ID(self):
-        return (self.discovery_date.year+self.discovery_date.month+self.discovery_date.day+'_'+self.site+_+'T'+self.turbine+self.species)
+        fmt = '%Y-%M-%d'
+        out = '%Y%m%d'
+        disco_date = datetime.strftime(datetime.strptime(self.discovery_date, fmt), out)
+
+        try:
+            sublocation = 'T'+str(int(self.turbine.name))
+        except:
+            sublocation = self.turbine.name
+
+        return (disco_date
+            +'_'
+            +self.site.short
+            +'_'
+            +sublocation
+            +'_'
+            +self.species.species_code)
     
     def __str__(self):
-        return self.ID
+        return self.ID()
 
 class ActionsTaken(models.Model):
     parent = models.ForeignKey(DownedWildlifeMonitoring)
@@ -70,7 +84,7 @@ class ActionsTaken(models.Model):
     action = models.TextField()
 
 class NeneSurvey(models.Model):
-    date = models.DateField(default=date.today)
+    date = models.DateField(default=timezone.now)
     site = models.ForeignKey(Site)
     start_time =models.TimeField()
     end_time = models.TimeField()
@@ -85,7 +99,7 @@ class CareSetUp(models.Model):
     loc = models.PointField(null=True,blank=True)
     trial = models.CharField(max_length=3)
     carcass_number = models.PositiveIntegerField()
-    start_date = models.DateField(default = date.today)
+    start_date = models.DateField(default = timezone.now)
     carcass_type = models.ForeignKey(SpeciesDef)
     distance = models.PositiveIntegerField()
     direction = models.PositiveIntegerField()

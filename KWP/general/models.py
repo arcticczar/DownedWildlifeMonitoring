@@ -23,4 +23,3 @@ class TrapCheck(models.Model):
 	arrival_status = models.CharField(max_length=50)
 	arrival_bait = models.ForeignKey(Bait)
 	
-

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.gis import admin
 from django.apps import apps
 
-app = apps.get_app_config('downed_wildlife_monitoring')
+app = apps.get_app_config('general')
 for model_name, model in app.models.items():
     model_admin = type(model_name + "Admin", (admin.ModelAdmin,), {})
 
