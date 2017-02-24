@@ -1,16 +1,14 @@
-<!-- {% load app_filters %} -->
-
 <h2></h2>
 	<section>
-	{% if model %}
-		<h3>{{ source}}</h3>
+	{% if ziplist %}
+		<h3>{{ instance }}</h3>
 		<ul>
 
 		</ul>
 	</section>
 		<section>
-			{%  for obj in model %}
-			<li>{{ obj}}
+			{%  for obj in ziplist %}
+			<li>{{ obj.0 }} - {{ obj.1}}
 			{% endfor %}
 		</section>
 	{% else %}
