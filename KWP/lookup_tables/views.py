@@ -22,7 +22,7 @@ def models(request, app, app_model):
 	return HttpResponse(output)
 
 
-def data(request, app, instance, model):
+def personnel_data(request, app, instance, model):
 	model = apps.get_model(app, model)
 	data = model.objects.get(initials__iexact=instance) # return data
 	fieldlist = [field.name for field in data._meta.fields] #return field list as string

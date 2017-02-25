@@ -1,7 +1,13 @@
+{% extends parent_template|default:"base.html" %}
+{% block title %}
+ {{ instance }}
+{% endblock %}
+{% block content %}
 <h2></h2>
 	<section>
 	{% if ziplist %}
 		<h3>{{ instance }}</h3>
+		
 		<ul>
 
 		</ul>
@@ -14,3 +20,4 @@
 	{% else %}
 	 <p> No Data </p>
 	 {% endif %}
+	 {% endblock %}

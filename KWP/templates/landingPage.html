@@ -1,0 +1,8 @@
+{% for app in modellist %}
+	<p>{{ app }}</a></p>
+		{% for model in modellist.app %}
+		<ul>
+			<li>{{ model }}</li>
+		</ul>
+		{% endfor %}
+	{% endfor %}

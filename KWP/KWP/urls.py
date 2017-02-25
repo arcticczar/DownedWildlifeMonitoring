@@ -16,9 +16,9 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from lookup_tables.views import lookup_index, models, data
+from lookup_tables.views import lookup_index, models, personnel_data
 from Makamakaole.views import index
-from general.views import homepage
+from views import homepage
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),  #Admin site
@@ -26,5 +26,5 @@ urlpatterns = [
     url(r'^index/', index), #List all models in Downed Wildlife Monitoring
     url(r'^lookup/$', lookup_index), #lookup tables landing page
     url(r'^(?P<app>[\w\-]+)/(?P<app_model>[\w\-]+)/$', models), #display model and database records
-    url(r'^(?P<app>[\w\-]+)/(?P<model>[\w\-]+)/(?P<instance>[\w\-]+)/$', data)
+    url(r'^(?P<app>[\w\-]+)/(?P<model>[\w\-]+)/(?P<instance>[\w\-]+)/$', personnel_data)
 ]
