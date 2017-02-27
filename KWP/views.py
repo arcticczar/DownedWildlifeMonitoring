@@ -23,4 +23,4 @@ def homepage(request):
 	template = loader.get_template('landingPage.html')
 	context = Context({'applist':modellist})
 	output = template.render(context)
-	return HttpResponse(output)
+	return HttpResponse("output")

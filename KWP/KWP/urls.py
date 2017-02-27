@@ -16,15 +16,14 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from lookup_tables.views import lookup_index, models, personnel_data
-from Makamakaole.views import index
+from lookup_tables import url as lookup_tables_urls
+from downed_wildlife_monitoring import url as downedwildlifemonitoring_urls
 from views import homepage
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),  #Admin site
-    url(r'^$', homepage), #default landing page
-    url(r'^index/', index), #List all models in Downed Wildlife Monitoring
-    url(r'^lookup/$', lookup_index), #lookup tables landing page
-    url(r'^(?P<app>[\w\-]+)/(?P<app_model>[\w\-]+)/$', models), #display model and database records
-    url(r'^(?P<app>[\w\-]+)/(?P<model>[\w\-]+)/(?P<instance>[\w\-]+)/$', personnel_data)
+    url(r'^$', homepage, name='home'), #default landing page
+    url(r'^', include(downedwildlifemonitoring_urls)),
+    url(r'^', include(lookup_tables_urls))
+    
 ]
