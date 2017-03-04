@@ -1,36 +1,44 @@
+'''
+Lookup tables are created to be modified rarely if ever.
+Models here will be referenced by data in other apps.
+'''
+
 from django.db import models
 from django.contrib.gis.db import models
 
-# Create your models here.
+# define relative wildlife size classes
 class SizeClass(models.Model):
     size_txt = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.size_txt
 
+#list federal and state status.
 class Status(models.Model):
     status_txt = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.status_txt
     
-
+#species information for all wildlife
 class SpeciesDef(models.Model):
     common_name=models.CharField(max_length=200)
     scientific_name=models.CharField(max_length=200)
     species_code=models.CharField(max_length=10)
-    species_status=models.ForeignKey(Status)
-    size_class=models.ForeignKey(SizeClass)
+    species_status=models.ForeignKey(Status) #get status from status model
+    size_class=models.ForeignKey(SizeClass) #get size from sizeclass model
 
     def __str__(self):
         return self.common_name
 
+#relative age
 class Age(models.Model):
     age_text = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.age_text
 
+#Species information for plants to use in outplanting and weed control
 class PlantSpecies(models.Model):
     common_name = models.CharField(max_length=200)
     hawaiian_name = models.CharField(max_length=200)
@@ -43,6 +51,7 @@ class PlantSpecies(models.Model):
     def __str__(self):
         return self.scientific_name
 
+#Cardinal directions for use with compass bearings
 class Direction(models.Model):
     direction_text = models.CharField(max_length=50, unique=True)
     direction_short = models.CharField(max_length=2)
@@ -51,12 +60,14 @@ class Direction(models.Model):
     def __str__(self):
         return self.direction_text
 
+#Bait used for trapping
 class Bait(models.Model):
     bait_text=models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.bait_text
 
+#All personnel related to site activity
 class Personnel(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
@@ -71,22 +82,25 @@ class Personnel(models.Model):
     def __str__(self):
         return self.first_name +' ' + self.last_name
 
+#Canine searchers
 class Canine(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.name
-    
+
+#General locations where activity occurs
 class Site(models.Model):
-    loc = models.MultiPolygonField(null=True,blank=True)
+    loc = models.MultiPolygonField(null=True,blank=True) #Defines general area
     locations = models.CharField(max_length=200, unique=True)
     short = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
         return self.locations
 
+#On Site infrastructure buildings and sites of importance
 class Infrastructure(models.Model):
-    loc = models.PointField(null=True,blank=True)
+    loc = models.PointField(null=True,blank=True) #point location for buildings
     name = models.CharField(max_length=200)
     physical_phase = models.ForeignKey(Site, related_name='geographic_location')
     phase = models.ForeignKey(Site, related_name='owner')
