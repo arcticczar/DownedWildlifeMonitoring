@@ -1,12 +1,13 @@
 from django.shortcuts import render
 
 from django.http import HttpResponse
-
+from django.views.generic import View
 from django.apps import apps
 
 from .models import *
 
-
-def index(request):
-	output = "<p> ".join([str(item._meta.verbose_name) for item in apps.get_models()])
-	return HttpResponse(output)
+class Maka_index(View):
+    def get(self, request):
+	
+        models = '<br/>'.join(apps.get_app_config('Makamakaole').models)
+        return HttpResponse('<H2>Makamakaole landing page</h2><br/>'+models)

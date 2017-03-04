@@ -1,10 +1,10 @@
 from django.conf.urls import url
 
-from .views import lookup_index, models, personnel_data, status
+from .views import lookup_index, models, personnel_data, status, data
 
 urlpatterns = [
-	url(r'^lookup/', lookup_index),
-	url(r'^(?P<app>[\w\-]+)/(?P<app_model>[\w\-]+)/$', models), #display model and database records
-    url(r'^(?P<app>[\w\-]+)/(?P<model>[\w\-]+)/(?P<instance>[\w\-]+)/$', personnel_data),
-    url(r'^lookup/$', lookup_index), #lookup tables landing page
+	url(r'^$', lookup_index, name='lookup'),
+	#url(r'^(?P<app>[\w\-]+)/(?P<app_model>[\w\-]+)/$', models, name='model_data'), #display model and database records
+   url(r'^(?P<app>[\w\-]+)/(?P<model>[\w\-]+)/(?P<instance>[\w\-]+)/$', personnel_data),
+   #url(r'^(?P<model>[\w\-]+)/data$', data.as_view(), name='data' )
 	]

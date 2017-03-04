@@ -6,7 +6,7 @@
 
 {% block content %}
 	<form
-	action="{% url 'Makamakaole_NightSurvey_create' %}" method="post">
+	action="{% url 'Makamakaole_NightSurvey' %}" method="post">
 	{% csrf_token %}
 	
 	{% for field in form %}

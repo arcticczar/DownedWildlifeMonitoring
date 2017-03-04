@@ -1,8 +1,17 @@
-{% for app in modellist %}
-	<p>{{ app }}</a></p>
-		{% for model in modellist.app %}
+{% extends parent_template|default:"base.html" %}
+{% block title %}
+ Home Page
+{% endblock %}
+
+{% block content %}
+{% for app1,models in modellist.items %}
+	<h2><p>{{ app1 }}</a></p></h2>
+		{% for model in models %}
 		<ul>
-			<li>{{ model }}</li>
+			<li><b>{{ model|title }}</b> - Add Data - 
+          <a href="{% url 'model_data' app1 model %}">View Data</li></a>
 		</ul>
 		{% endfor %}
 	{% endfor %}
+
+{% endblock %}

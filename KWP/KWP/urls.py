@@ -17,13 +17,16 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 from lookup_tables import url as lookup_tables_urls
+from Makamakaole import url as makamakaole_urls
 from downed_wildlife_monitoring import url as downedwildlifemonitoring_urls
-from views import homepage
+from views import homepage, data
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),  #Admin site
     url(r'^$', homepage, name='home'), #default landing page
-    url(r'^', include(downedwildlifemonitoring_urls)),
-    url(r'^', include(lookup_tables_urls))
+    url(r'^(?P<appstr>[\w\-]+)/(?P<model>[\w\-]+)/data$', data.as_view(), name='model_data'),
+    url(r'^makamakaole/', include (makamakaole_urls)),
+    url(r'^downedwildlife/', include(downedwildlifemonitoring_urls)),
+    url(r'^lookup/', include(lookup_tables_urls))
     
 ]
