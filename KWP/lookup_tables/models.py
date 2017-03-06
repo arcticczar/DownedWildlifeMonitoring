@@ -74,7 +74,7 @@ class Personnel(models.Model):
     organization = models.CharField(max_length=200)
     initials = models.CharField(max_length=20, unique=True)
     staff_type = models.CharField(max_length=50)
-    hire_date = models.DateField()
+    hire_date = models.DateField( null=True, blank=True)
     phone = models.CharField(max_length=20)
     email = models.EmailField()
     active = models.BooleanField()
