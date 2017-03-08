@@ -1,0 +1,21 @@
+{% extends parent_template|defualt: "base.html" %}
+
+{% block title %}
+{{ block.super}} - Data Entry
+{% endblock %}
+
+{% block content %}
+    <div>
+    <div>
+    <form
+        action="{% url 'create' %}
+        method= "post">
+    {% csrf_token %}
+    {{ form.as_p}}
+    <button type="submit">
+    Submit Data</button>
+    </form>
+    </div>
+    </div>
+    {% endblock %}
+    

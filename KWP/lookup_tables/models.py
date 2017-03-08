@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 07 08:33:14 2017
+
+@author: mstelmach
+"""
+
 '''
 Lookup tables are created to be modified rarely if ever.
 Models here will be referenced by data in other apps.

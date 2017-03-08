@@ -1,4 +1,11 @@
-from datetime import date, datetime
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 07 08:32:18 2017
+
+@author: mstelmach
+"""
+
+from datetime import datetime
 
 
 from django.db import models
@@ -23,11 +30,12 @@ SearchIncidental = (('Search','Search'),('Incidental','Incidental'))
 Sex = (('Male','Male'),('Female','Female'),('Unknown','Unknown'))
 Condition = (('Alive','Alive'),('Dead','Dead'))
 
+#record a downed wildlife incident
 class DownedWildlifeMonitoring(models.Model):
     loc = models.PointField(null=True,blank=True)
     discovery_date = models.DateField(default=timezone.now)
     discovered_by = models.ForeignKey(Personnel, related_name='discover')
-    search_type = models.CharField(max_length=20, choices= SearchType)
+    search_type = models.CharField(max_length=20, choices= SearchType) #Visual or Canine
     search_incidental = models.CharField(max_length=20, choices=SearchIncidental)
     affiliation = models.CharField(max_length=50)
     canine_searcher = models.ForeignKey(Canine)
@@ -44,28 +52,29 @@ class DownedWildlifeMonitoring(models.Model):
     bearing = models.PositiveIntegerField()
     ground_cover = models.CharField(max_length = 200)
     wind_dir = models.ForeignKey(Direction)
-    wind_speed = models.PositiveIntegerField()
-    cloud_cover = models.PositiveIntegerField()
+    wind_speed = models.PositiveIntegerField(help_text="Meters per second") 
+    cloud_cover = models.PositiveIntegerField(help_text="Percent")
     cloud_deck = models.CharField(max_length=50)
     precip = models.ForeignKey(Weather)
-    temp = models.PositiveIntegerField()
+    temp = models.PositiveIntegerField(help_text="degrees fahrenheit")
     animal_condition = models.CharField(max_length =20, choices = Condition)
-    description = models.TextField()
+    description = models.TextField(help_text="describe the carcass: injuries, fat, condition, etc...")
     collected_by = models.ForeignKey(Personnel, related_name='collected')
-    photo_structure = models.ImageField(null=True,blank=True)
-    photo_as_found = models.ImageField(null=True,blank=True)
-    photo_as_found2 = models.ImageField(null=True,blank=True)
-    photo_injury = models.ImageField(null=True,blank=True)
-    photo_other = models.ImageField(null=True,blank=True)
+    photo_structure = models.ImageField(null=True,blank=True, help_text="Photo relative to the structure")
+    photo_as_found = models.ImageField(null=True,blank=True, help_text="Photo of the carcass from just above")
+    photo_as_found2 = models.ImageField(null=True,blank=True, help_text="Photo of the carcass opposite side")
+    photo_injury = models.ImageField(null=True,blank=True, help_text="Close up of animal injury")
+    photo_other = models.ImageField(null=True,blank=True, help_text="Additional photo if needed")
     notes = models.TextField(null=True,blank=True)
-    report_date = models.DateField()
-    time_reported = models.DateTimeField(null=True,blank=True)
-    time_responded = models.DateTimeField(null=True,blank=True)
-    time_collected = models.DateTimeField(null=True,blank=True)
-    date_last_searched = models.DateField()
+    report_date = models.DateField(null=True, blank=True)
+    time_reported = models.DateTimeField(null=True,blank=True, help_text="What time were the agencies first notified")
+    time_responded = models.DateTimeField(null=True,blank=True, help_text="What time did the agencies respond")
+    time_collected = models.DateTimeField(null=True,blank=True, help_text="What time was the specimen collected")
+    date_last_searched = models.DateField(help_text="The date of the last monitoring")
     weather_TOD = models.CharField(default='unknown',max_length=200, null=True, blank=True)
     outside = models.BooleanField()
 
+    #Define a unique ID based on standard values format YYYYMMDD_SITE_Turbine_Species Code
     def ID(self):
         fmt = '%Y-%M-%d'
         out = '%Y%m%d'
@@ -87,6 +96,8 @@ class DownedWildlifeMonitoring(models.Model):
     def __str__(self):
         return self.ID()
 
+#Actions taken as a subreport of Downed Wildlife Monitoring.  Should include:
+#Initial observation, collection, and reporting
 class ActionsTaken(models.Model):
     parent = models.ForeignKey(DownedWildlifeMonitoring)
     event_time = models.DateTimeField()
@@ -95,32 +106,34 @@ class ActionsTaken(models.Model):
     def __str__(self):
         return self.parent.ID()+'-'+self.event_time
 
+#KWP nene survey for each phase.
 class NeneSurvey(models.Model):
     date = models.DateField(default=timezone.now)
     site = models.ForeignKey(Site)
     start_time =models.TimeField()
     end_time = models.TimeField()
     observer = models.ForeignKey(Personnel)
-    count = models.PositiveIntegerField()
+    count = models.PositiveIntegerField(help_text="Total number of Nene observed")
     notes = models.TextField(null=True,blank=True)
 
     def __str__(self):
         return str(self.date) +'-'+ self.site.short
 
+#Day 0 initial set-up of carcass retention studies.
 class CareSetUp(models.Model):
     loc = models.PointField(null=True,blank=True)
-    trial = models.CharField(max_length=3)
-    carcass_number = models.PositiveIntegerField()
+    trial = models.CharField(max_length=3, help_text="trial ID, unique for each CARE trial")
+    carcass_number = models.PositiveIntegerField(help_text="sequential number for each carcass in trial")
     start_date = models.DateField(default = timezone.now)
     carcass_type = models.ForeignKey(SpeciesDef)
-    distance = models.PositiveIntegerField()
-    direction = models.PositiveIntegerField()
+    distance = models.PositiveIntegerField(help_text="distance in meters from the turbine")
+    direction = models.PositiveIntegerField(help_text="bearing from the turbine to the CARE location")
     latitude = models.DecimalField(max_digits=20, decimal_places=10)
     longitude = models.DecimalField(max_digits=20, decimal_places=10)
     site = models.ForeignKey(Site)
     turbine = models.ForeignKey(Infrastructure)
-    vegetation = models.CharField(max_length=50)
-    waypoint = models.PositiveIntegerField()
+    vegetation = models.CharField(max_length=50, help_text="relative vegetation height")
+    waypoint = models.ForeignKey(RandomPoints, related_name="CARE_waypoint")
     photo = models.ImageField()
     notes = models.TextField(null=True,blank=True)
     observer = models.ForeignKey(Personnel)
@@ -149,12 +162,12 @@ CarcassStatus = (('Intact','Intact'),
                  ('Other (notes)', 'Other (notes)'))
 
                  
-
+#Continued Monitoring of Carcass Retention
 class CareMonitoring(models.Model):
-    parent = models.ForeignKey(CareSetUp)
+    parent = models.ForeignKey(CareSetUp, help_text="Related to CARE Setup ID")
     loc = models.PointField(null=True,blank=True)
     monitor_date = models.DateField(default=timezone.now)
-    present = models.BooleanField()
+    present = models.BooleanField(help_text="True if present")
     latitude = models.DecimalField(max_digits=20, decimal_places=10)
     longitude = models.DecimalField(max_digits=20, decimal_places=10)
     condition = models.CharField(max_length=255, choices=CarcassStatus)
@@ -165,14 +178,15 @@ class CareMonitoring(models.Model):
     def __str__(self):
         return self.parent.trial+self.parent.carcass_number+'_'+str(self.monitor_date)
 
+#KWP Phase I searching one entry per search day per person.
 class KWPISearching(models.Model):
     monitor_date = models.DateField(default=timezone.now)
     observer = models.ForeignKey(Personnel)
     search_type = models.CharField(max_length=20, choices=SearchType)
-    temp = models.PositiveIntegerField()
-    wind_speed = models.DecimalField(max_digits=5, decimal_places=2)
-    wind_dir = models.ForeignKey(Direction)
-    cloud_cover = models.PositiveIntegerField()
+    temp = models.PositiveIntegerField(help_text="degrees fahrenheit")
+    wind_speed = models.DecimalField(max_digits=5, decimal_places=2, help_text="meters per second")
+    wind_dir = models.ForeignKey(Direction, help_text="direction wind is blowing from(NE for trades)")
+    cloud_cover = models.PositiveIntegerField(help_text="percent")
     precip = models.ForeignKey(Weather)
     start_time = models.TimeField()
     t1 = models.BooleanField()
@@ -201,13 +215,14 @@ class KWPISearching(models.Model):
     def __str__(self):
         return str(self.monitor_date)
 
+#KWP Phase II searching one entry per search day per person.
 class KWPIISearching(models.Model):
     monitor_date = models.DateField(default=timezone.now)
     observer = models.ForeignKey(Personnel)
     search_type = models.CharField(max_length=20, choices=SearchType)
-    temp = models.PositiveIntegerField()
-    wind_speed = models.DecimalField(max_digits=5, decimal_places=2)
-    wind_dir = models.ForeignKey(Direction)
+    temp = models.PositiveIntegerField(help_text="degrees fahrenheit")
+    wind_speed = models.DecimalField(max_digits=5, decimal_places=2, help_text="meters per second")
+    wind_dir = models.ForeignKey(Direction, help_text="direction wind is blowing from(NE for trades)")
     cloud_cover = models.PositiveIntegerField()
     precip = models.ForeignKey(Weather)
     start_time = models.TimeField()
@@ -230,21 +245,22 @@ class KWPIISearching(models.Model):
 
     def __str__(self):
         return str(self.monitor_date)
-        
+
+#Searcher Efficiency Trial monitoring data
 class SEEFMaster(models.Model):
     loc = models.PointField(null=True,blank=True)
     trial_date = models.DateField()
     site = models.ForeignKey(Site)
     turbine = models.ForeignKey(Infrastructure)
     species = models.ForeignKey(SpeciesDef)
-    found = models.BooleanField()
-    not_recovered = models.BooleanField()
+    found = models.BooleanField(null=True,blank=True)
+    not_recovered = models.BooleanField(null=True,blank=True)
     latitude = models.DecimalField(max_digits=20, decimal_places=10)
     longitude = models.DecimalField(max_digits=20, decimal_places=10)
     distance = models.DecimalField(max_digits=6, decimal_places=2)
     point_id = models.ForeignKey(RandomPoints)
-    searcher = models.ForeignKey(Personnel, related_name='searcher')
-    canine = models.ForeignKey(Canine)
+    searcher = models.ForeignKey(Personnel, related_name='searcher', null=True,blank=True)
+    canine = models.ForeignKey(Canine, null=True,blank=True)
     veg_type = models.CharField(max_length=50)
     proctor = models.ForeignKey(Personnel, related_name='proctor')
     notes = models.TextField(null=True,blank=True)
@@ -252,6 +268,7 @@ class SEEFMaster(models.Model):
     def __str__(self):
         return str(self.trial_date)+self.site.short+self.turbine.name+self.point_id.point_id
 
+#Class for searcher reporing of SEEF Results
 class SEEFReporting(models.Model):
 	trial_date = models.DateField(default = timezone.now)
 	turbine = models.ForeignKey(Infrastructure)
@@ -263,6 +280,7 @@ class SEEFReporting(models.Model):
 
 DetType = (('Ground','Ground'),('Nacelle','Nacelle'))
 
+#Collecting data associated with changing wildlife acoustics cards.
 class WACardSwap(models.Model):
     swap_date = models.DateField(default=timezone.now)
     site = models.ForeignKey(Site)
@@ -302,7 +320,7 @@ RightLeft = (('Right','Right'),
              ('None','None'),
              ('Unknown','Unknown'))
 
-
+#incidental wildlife observations
 class WEOP(models.Model):
     obs_date = models.DateField(default=timezone.now)
     obs_time = models.TimeField(auto_now_add=True, blank=True)

@@ -23,9 +23,7 @@ from .models import (SizeClass,
                     NightSurvey_Behavior,
                     NightSurvey_Elevation,
                     NightSurvey_Distance,
-                    BandColor,
-                    RandomPoints,
-                    SearchArea)
+                    BandColor)
 
 class ScientificNameMixin:
     """check scientific name"""
@@ -139,7 +137,7 @@ class BaitForm(forms.ModelForm):
     
 class PersonnelForm(forms.ModelForm):
     class Meta:
-        model = Direction
+        model = Personnel
         fields = '__all__'
         
     def clean_first_name(self):

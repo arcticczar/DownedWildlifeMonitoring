@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'KWP.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis', #Use postgis DB
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': '',
         'USER': '',
         'PASSWORD': '',
