@@ -23,6 +23,7 @@ from .models import (DownedWildlifeMonitoring,
 
 #Create methods for validating latitude and longitude.
 class LatLonMixin:
+
     def clean_latitude(self):
         new_lat = self.cleaned_data['latitude']
         try:
@@ -153,7 +154,7 @@ class CleanSpeciesMixin:
     def clean_species(self):
         return self.cleaned_data['species']
     
-class CleanTrialDateMixin(self):
+class CleanTrialDateMixin:
     def clean_trial_date(self):
         return self.cleaned_data['trial_date']
 

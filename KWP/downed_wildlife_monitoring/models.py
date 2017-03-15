@@ -32,13 +32,14 @@ Condition = (('Alive','Alive'),('Dead','Dead'))
 
 #record a downed wildlife incident
 class DownedWildlifeMonitoring(models.Model):
+    IDKey = models.CharField(null=True, blank=True, max_length=50)
     loc = models.PointField(null=True,blank=True)
     discovery_date = models.DateField(default=timezone.now)
     discovered_by = models.ForeignKey(Personnel, related_name='discover')
     search_type = models.CharField(max_length=20, choices= SearchType) #Visual or Canine
     search_incidental = models.CharField(max_length=20, choices=SearchIncidental)
     affiliation = models.CharField(max_length=50)
-    canine_searcher = models.ForeignKey(Canine)
+    canine_searcher = models.ForeignKey(Canine, null=True,blank=True)
     species = models.ForeignKey(SpeciesDef)
     age = models.ForeignKey(Age)
     sex = models.CharField(max_length=50,choices=Sex)
@@ -66,35 +67,37 @@ class DownedWildlifeMonitoring(models.Model):
     photo_injury = models.ImageField(null=True,blank=True, help_text="Close up of animal injury")
     photo_other = models.ImageField(null=True,blank=True, help_text="Additional photo if needed")
     notes = models.TextField(null=True,blank=True)
-    report_date = models.DateField(null=True, blank=True)
+    report_date = models.DateField(default=timezone.now, null=True, blank=True)
     time_reported = models.DateTimeField(null=True,blank=True, help_text="What time were the agencies first notified")
     time_responded = models.DateTimeField(null=True,blank=True, help_text="What time did the agencies respond")
     time_collected = models.DateTimeField(null=True,blank=True, help_text="What time was the specimen collected")
-    date_last_searched = models.DateField(help_text="The date of the last monitoring")
+    date_last_searched = models.DateField(null=True,blank=True, help_text="The date of the last monitoring")
     weather_TOD = models.CharField(default='unknown',max_length=200, null=True, blank=True)
     outside = models.BooleanField()
 
     #Define a unique ID based on standard values format YYYYMMDD_SITE_Turbine_Species Code
-    def ID(self):
-        fmt = '%Y-%M-%d'
+    def IDcode(self):
+        #fmt = '%Y-%M-%d'
         out = '%Y%m%d'
-        disco_date = datetime.strftime(datetime.strptime(self.discovery_date, fmt), out)
+        disco_date = self.discovery_date.strftime(out)
 
         try:
             sublocation = 'T'+str(int(self.turbine.name))
         except:
             sublocation = self.turbine.name
-
-        return (disco_date
+            
+        output = (disco_date
             +'_'
             +self.site.short
             +'_'
             +sublocation
             +'_'
             +self.species.species_code)
+        
+        return output
     
     def __str__(self):
-        return self.ID()
+        return self.IDcode()
 
 #Actions taken as a subreport of Downed Wildlife Monitoring.  Should include:
 #Initial observation, collection, and reporting
@@ -253,8 +256,8 @@ class SEEFMaster(models.Model):
     site = models.ForeignKey(Site)
     turbine = models.ForeignKey(Infrastructure)
     species = models.ForeignKey(SpeciesDef)
-    found = models.BooleanField(null=True,blank=True)
-    not_recovered = models.BooleanField(null=True,blank=True)
+    found = models.NullBooleanField()
+    not_recovered = models.NullBooleanField()
     latitude = models.DecimalField(max_digits=20, decimal_places=10)
     longitude = models.DecimalField(max_digits=20, decimal_places=10)
     distance = models.DecimalField(max_digits=6, decimal_places=2)

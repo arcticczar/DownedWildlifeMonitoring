@@ -12,6 +12,7 @@ Models here will be referenced by data in other apps.
 
 from django.db import models
 from django.contrib.gis.db import models
+from django.shortcuts import reverse
 
 # define relative wildlife size classes
 class SizeClass(models.Model):
@@ -19,6 +20,9 @@ class SizeClass(models.Model):
 
     def __str__(self):
         return self.size_txt
+    
+    def get_absolute_url(self):
+        return reverse('sizeclass_detail', kwargs={'size_txt':self.size_txt})
 
 #list federal and state status.
 class Status(models.Model):
@@ -26,6 +30,9 @@ class Status(models.Model):
 
     def __str__(self):
         return self.status_txt
+    
+    def get_absolute_url(self):
+        return reverse('status_detail', kwargs={'status_txt':self.status_txt})
     
 #species information for all wildlife
 class SpeciesDef(models.Model):
@@ -37,6 +44,9 @@ class SpeciesDef(models.Model):
 
     def __str__(self):
         return self.common_name
+    
+    def get_absolute_url(self):
+        return reverse('speciesdef_detail', kwargs={'species_code':self.species_code})
 
 #relative age
 class Age(models.Model):
@@ -44,6 +54,9 @@ class Age(models.Model):
 
     def __str__(self):
         return self.age_text
+    
+    def get_absolute_url(self):
+        return reverse('age_detail', kwargs={'age':self.age_text})
 
 #Species information for plants to use in outplanting and weed control
 class PlantSpecies(models.Model):
@@ -57,6 +70,9 @@ class PlantSpecies(models.Model):
 
     def __str__(self):
         return self.scientific_name
+    
+    def get_absolute_url(self):
+        return reverse('age_detail', kwargs={'common_name':self.common_name})
 
 #Cardinal directions for use with compass bearings
 class Direction(models.Model):
@@ -66,13 +82,20 @@ class Direction(models.Model):
 
     def __str__(self):
         return self.direction_text
+    
+    def get_absolute_url(self):
+        return reverse('direction_detail', kwargs={'direction_short':self.direction_short})
 
 #Bait used for trapping
 class Bait(models.Model):
     bait_text=models.CharField(max_length=200, unique=True)
+    
 
     def __str__(self):
         return self.bait_text
+    
+    def get_absolute_url(self):
+        return reverse('bait_detail', kwargs={'bait_text': self.bait_text.replace(' ','')})
 
 #All personnel related to site activity
 class Personnel(models.Model):
@@ -88,6 +111,9 @@ class Personnel(models.Model):
 
     def __str__(self):
         return self.first_name +' ' + self.last_name
+    
+    def get_absolute_url(self):
+        return reverse('personnel_detail', kwargs={'model':'Personnel', 'instance':self.initials})
 
 #Canine searchers
 class Canine(models.Model):
@@ -95,6 +121,9 @@ class Canine(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return (reverse('canine_detail', kwargs={'name':self.name}))
 
 #General locations where activity occurs
 class Site(models.Model):
@@ -104,6 +133,9 @@ class Site(models.Model):
 
     def __str__(self):
         return self.locations
+    
+    def get_absolute_url(self):
+        return reverse('site_detail', kwargs={'site':self.locations})
 
 #On Site infrastructure buildings and sites of importance
 class Infrastructure(models.Model):
@@ -118,6 +150,9 @@ class Infrastructure(models.Model):
 
     def __str__(self):
         return self.phase.short +'-'+ self.name
+    
+    def get_absolute_url(self):
+        return reverse('infrastructure', kwargs={'phase':self.phase, 'name':self.name})
 
 class TrapType(models.Model):
     trap_type_text = models.CharField(max_length=200, unique=True)
@@ -127,30 +162,45 @@ class TrapType(models.Model):
 
     def __str__(self):
         return self.trap_type_text
+    
+    def get_absolute_url(self):
+        return reverse('traptype_detail', kwargs={'trap_type_text':self.trap_type_text})
 
 class Weather(models.Model):
     rain = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.rain
+    
+    def get_absolute_url(self):
+        return reverse('weather_detail', kwargs={'rain':self.rain})
 
 class NightSurvey_Behavior(models.Model):
     behavior = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.behavior
+    
+    def get_absolute_url(self):
+        return reverse('nightsurvey_behavior_detail', kwargs={'behavior':self.behavior})
 
 class NightSurvey_Elevation(models.Model):
     elevation = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.elevation
+    
+    def get_absolute_url(self):
+        return reverse('nightsurvey_elevation_detail', kwargs={'elevation':self.elevation})
 
 class NightSurvey_Distance(models.Model):
     distance_range = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.distance_range
+    
+    def get_absolute_url(self):
+        return reverse('site_detail', kwargs={'site':self.locations})
 
 class BandColor(models.Model):
     color_text = models.CharField(max_length=50, unique=True)

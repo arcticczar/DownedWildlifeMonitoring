@@ -11,3 +11,7 @@ class index(View):
 	
         models = '<br/>'.join(apps.get_app_config('downed_wildlife_monitoring').models)
         return HttpResponse('<H2>Downed Wildlife Monitoring landing page</h2><br/>'+models)
+    
+class DownedWildlife(View):
+    def get(self, request):
+        return HttpResponse('view')

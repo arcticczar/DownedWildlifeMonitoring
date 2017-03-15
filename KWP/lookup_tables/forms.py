@@ -61,7 +61,10 @@ class SizeClassForm(forms.ModelForm):
         fields = '__all__'
         
     def clean_size_txt(self):
-        return self.cleaned_data['size_txt']
+        new_size_txt= self.cleaned_data['size_txt']
+        if new_size_txt.lower() == 'create':
+            raise ValidationError('SizeClass may not be "create".')
+        return new_size_txt
         
 class StatusForm(forms.ModelForm):
     class Meta:
