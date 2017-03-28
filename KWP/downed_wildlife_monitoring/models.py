@@ -10,6 +10,7 @@ from datetime import datetime
 
 from django.db import models
 from django.utils import timezone
+from django.shortcuts import reverse
 
 from django.contrib.gis.db import models
 
@@ -32,7 +33,7 @@ Condition = (('Alive','Alive'),('Dead','Dead'))
 
 #record a downed wildlife incident
 class DownedWildlifeMonitoring(models.Model):
-    IDKey = models.CharField(null=True, blank=True, max_length=50)
+    IDKey = models.CharField(null=True, blank=True, max_length=50, unique=True, help_text="YYYYMMDD_Site_Turbine_speciesCode i.e. 20170322_KWPI_T01_COMY")
     loc = models.PointField(null=True,blank=True)
     discovery_date = models.DateField(default=timezone.now)
     discovered_by = models.ForeignKey(Personnel, related_name='discover')
@@ -98,6 +99,12 @@ class DownedWildlifeMonitoring(models.Model):
     
     def __str__(self):
         return self.IDcode()
+    
+    def get_absolute_url(self):
+        return reverse('downedwildlifemonitoring_detail', kwargs={'idkey':self.IDKey})
+
+    class Meta:
+        pass
 
 #Actions taken as a subreport of Downed Wildlife Monitoring.  Should include:
 #Initial observation, collection, and reporting
@@ -144,6 +151,7 @@ class CareSetUp(models.Model):
     class Meta:
         ordering = ['-start_date']
         get_latest_by = "start_date"
+        unique_together = ("trial", "carcass_number")
 
     def __str__(self):
         return str(self.trial)+str(self.carcass_number)

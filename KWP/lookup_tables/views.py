@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render, get_object_or_404, render_to_response, redirect
 from django.http.response import HttpResponse, Http404
 from django.template import RequestContext, loader
@@ -5,13 +6,12 @@ from django.apps import apps
 from django.views.generic import View
 from django.core.urlresolvers import reverse
 
-import lookup_tables
 from .models import *
 from lookup_tables.forms import SizeClassForm
 
 
 class generic_detail_mixin:
-    def get(self, request, parentmodel, search_term, model_attribute, ):
+    def get(self, request, inputvalue ):
         data = get_object_or_404(self.parentmodel, self.search_term) # return data
     	fieldlist = [field.name for field in data._meta.fields] #return field list as string
     	attr = [getattr(data, item) for item in fieldlist] #return list of object attributes.
@@ -28,6 +28,9 @@ def lookup_index(request):
 class SizeClassDetail(View):
     template_name= 'lookup_tables/SizeClass_detail.html'
     
+    def get_object(self):
+        return get_object_or_404(SizeClass, size_txt__iexact=self.size_txt)
+    
     def get_absolute_url(self, size_txt):
         return reverse('sizeclass_detail', kwargs={'size_txt':size_txt})
     
@@ -35,6 +38,7 @@ class SizeClassDetail(View):
         size_text = get_object_or_404(SizeClass, size_txt__iexact=size_txt)
         return render(request, self.template_name, {'size_txt':size_text})
 
+'''
 #Create a size class through POST
 def SizeClassCreate(request):
     if request.method == 'POST':
@@ -47,7 +51,22 @@ def SizeClassCreate(request):
     else:  #non 'post' method
         form = SizeClassForm()
         return render(request, 'lookup_tables/SizeClass_form.html', {'form':SizeClassForm})
-        
+'''
+
+class SizeClassCreate(View):
+    form_class=SizeClassForm
+    template_name='lookup_tables/SizeClass_form.html'
+    
+    def get(self, request):
+        return render(request, self.template_name, {'form': self.form_class()})
+    
+    def post(self, request):
+        bound_form = self.form_class(request.POST)
+        if bound_form.is_valid():
+            new_post= bound_form.save()
+            return redirect(new_post)
+        else:
+            return render(request, self.template_name, {'form':bound_form})
         
 
 #return only the detail of a single status

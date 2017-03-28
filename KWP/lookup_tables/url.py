@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf.urls import url
 
 from .views import (lookup_index, 
@@ -25,7 +26,7 @@ from .views import (lookup_index,
 
 urlpatterns = [
         url(r'^$', lookup_index, name='lookup'),
-        url(r'sizeclass/create/$', SizeClassCreate, name='SizeClassCreate'),
+        url(r'sizeclass/create/$', SizeClassCreate.as_view(), name='SizeClassCreate'),
         url(r'sizeclass/(?P<size_txt>[\w\-]+)/$', SizeClassDetail.as_view(), name='sizeclass_detail'),
         url(r'status/(?P<status_txt>[\w\-]+)$', Status.as_view(),  name='status_detail'),
         url(r'speciesdef/(?P<species_code>[\w\-]+)$', SpeciesDefView.as_view(), name='speciesdef_detail'),

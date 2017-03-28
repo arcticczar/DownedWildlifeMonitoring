@@ -64,6 +64,8 @@ class SizeClassForm(forms.ModelForm):
         new_size_txt= self.cleaned_data['size_txt']
         if new_size_txt.lower() == 'create':
             raise ValidationError('SizeClass may not be "create".')
+        elif new_size_txt in [item.size_txt for item in SizeClass.objects.all()]:
+            raise ValidationError('Duplicate value')
         return new_size_txt
         
 class StatusForm(forms.ModelForm):
@@ -72,7 +74,13 @@ class StatusForm(forms.ModelForm):
         fields = '__all__'
 
     def clean_status_txt(self):
-        return self.cleaned_data['size_txt']
+        new_status_txt = self.cleaned_data['size_txt']
+        if new_status_txt.lower() == 'create':
+            raise ValidationError('Status cannot be "create".')
+        elif new_status_txt in [item.status_txt for item in Status.objects.all()]:
+            raise ValidationError('Duplicate value')
+        return new_status_txt
+        
 
 class SpeciesDefForm(ScientificNameMixin, forms.ModelForm):
     class Meta:
@@ -83,7 +91,12 @@ class SpeciesDefForm(ScientificNameMixin, forms.ModelForm):
         return self.cleaned_data['common_name']
     
     def clean_species_code(self):
-        return self.cleaned_data['species_code'].upper()
+        new_species_code = self.cleaned_data['species_code'].upper()
+        if new_species_code == 'CREATE':
+            raise ValidationError('Species code cannot be "CREATE".')
+        elif new_species_code in [item.species_code for item in SpeciesDef.objects.all()]:
+            raise ValidationError('Duplicate value')
+        return new_species_code
     
 class AgeForm(forms.ModelForm):
     class Meta:

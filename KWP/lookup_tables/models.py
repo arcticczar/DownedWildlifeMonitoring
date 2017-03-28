@@ -23,6 +23,15 @@ class SizeClass(models.Model):
     
     def get_absolute_url(self):
         return reverse('sizeclass_detail', kwargs={'size_txt':self.size_txt})
+    
+    def get_post_url(self):
+        pass
+    
+    def get_modify_url(self):
+        pass
+    
+    def get_delete_url(self):
+        pass
 
 #list federal and state status.
 class Status(models.Model):
