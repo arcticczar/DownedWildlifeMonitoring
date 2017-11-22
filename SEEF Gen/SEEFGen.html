@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>SEEF Generator</title>
+
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+
+  </head>
+  <body>
+      <h1>Use this tool to generate a set of random SEEF locations</h1>
+      <form class="">
+        <div class="form-group  col-xs-3" style="text-align:center; padding:20px">
+
+          Start Date<input class="form-control col-xs-3" type="Date" id="SD" value="2018-01-01" style="text-align:center">
+          End Date <input class="form-control col-xs-3" type="date" id="ED" value="2018-12-31" style="text-align:center">
+          Large Birds phase 1 <input class="form-control col-xs-3" type="number" id="LBP1" value="10" style="text-align:center">
+          Med Birds phase 1 <input class="form-control col-xs-3" type="number" id="MBP1" value="10" style="text-align:center">
+          Rats phase 1 <input class="form-control col-xs-3" type="number" id="RP1" value="40" style="text-align:center">
+          Large Birds phase 2 <input class="form-control col-xs-3" type="number" id="LBP2" value="10" style="text-align:center">
+          Med Birds phase 2 <input class="form-control col-xs-3" type="number" id="MBP2" value="10" style="text-align:center">
+          Rats phase 2 <input class="form-control col-xs-3" type="number" id="RP2" value="40" style="text-align:center">
+          <br>
+          <button class="btn btn-primary btn-lg" type="button" name="button" onclick="seefGen()">Generate SEEFs</button>
+        </div>
+
+      </form>
+      <div class="container" id='alert' style="color:red">
+
+      </div>
+      <button type="button" name="button" onclick="monthsort()">Sort by Month</button>
+      <table class="table" id="datatable">
+        <thead>
+            <th>Year</th>
+            <th>Month</th>
+            <th>ID</th>
+            <th>Site</th>
+            <th>Turbine</th>
+            <th>Distance</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Carcass Type</th>
+        </thead>
+        <tbody id="tbody">
+
+        </tbody>
+      </table>
+      <script type="text/javascript" src="points.js">//read in all random points as arrays</script>
+      <script type="text/javascript">
+      function monthsort() {
+          var table, rows, switching, i, x, y, shouldSwitch;
+          table = document.getElementById("datatable");
+          switching = true;
+          /* Make a loop that will continue until
+          no switching has been done: */
+          while (switching) {
+            // Start by saying: no switching is done:
+            switching = false;
+            rows = table.getElementsByTagName("tr");
+            /* Loop through all table rows (except the
+            first, which contains table headers): */
+            for (i = 1; i < (rows.length - 1); i++) {
+              // Start by saying there should be no switching:
+              shouldSwitch = false;
+              /* Get the two elements you want to compare,
+              one from current row and one from the next: */
+              x = rows[i].getElementsByTagName("TD")[1];
+              y = rows[i + 1].getElementsByTagName("TD")[1];
+              // Check if the two rows should switch place:
+              if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                // I so, mark as a switch and break the loop:
+                shouldSwitch= true;
+                break;
+              }
+            }
+            if (shouldSwitch) {
+              /* If a switch has been marked, make the switch
+              and mark that a switch has been done: */
+              rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+              switching = true;
+            }
+          }
+        }
+      function seefGen(){
+        if (ED.valueAsDate>SD.valueAsDate) {
+
+          $("#alert").html("") //reset any alerts
+          var months = Math.floor((ED.valueAsDate-SD.valueAsDate)/60/60/24/30/1000);  //calculate the number of months in the time frame
+          // read the number of trials into memory
+          var lbp1 = Number(LBP1.value);
+          var mbp1 = Number(MBP1.value);
+          var rp1 = Number(RP1.value);
+          var lbp2 = Number(LBP2.value);
+          var mbp2 = Number(MBP2.value);
+          var rp2 = Number(RP2.value);
+          trials = {
+            lbp1:[Number(LBP1.value),"Large Bird", 1],
+            mbp1:[Number(MBP1.value), "Med Bird",1],
+            rp1:[Number(RP1.value), "Rat",1],
+            lbp2:[Number(LBP2.value),"Large Bird",2],
+            mbp2:[ Number(MBP2.value), "Med Bird",2],
+            rp2:[Number(RP2.value), "Rat",2]
+          }
+
+          for (var i in trials){
+            while (trials[i][0]>0){
+              trials[i][0]--;
+              if (trials[i][2]==1){
+                var loc = Math.floor(Math.random()*7501); //generate a random number to select a point from the point list
+              }else if (trials[i][2]==2) {
+                var loc = Math.floor(Math.random()*10000)+7501; //generate a random number to select a point from the point list
+              }
+
+              //console.log(PointID[loc],site[loc],turbine[loc],dist[loc],lat[loc],long[loc]); // verify the data selected in the console
+              var newdate = SD.valueAsDate;
+              newdate.setMonth(newdate.getMonth()+Math.floor(Math.random()*months));
+
+              var table = document.getElementById("datatable").getElementsByTagName('tbody')[0];
+              var newRow = table.insertRow(table.rows.length);
+              var newyear = newRow.insertCell(0);
+              var yeartext = document.createTextNode(newdate.getUTCFullYear());
+              newyear.appendChild(yeartext);
+              var newmonth = newRow.insertCell(1);
+              var monthtext = document.createTextNode(newdate.getUTCMonth()+1);
+              newmonth.appendChild(monthtext);
+              var newPoint = newRow.insertCell(2);
+              var pointtext =document.createTextNode(PointID[loc]);
+              newPoint.appendChild(pointtext);
+              var newsite = newRow.insertCell(3);
+              var sitetext = document.createTextNode(site[loc]);
+              newsite.appendChild(sitetext);
+              var newturbine = newRow.insertCell(4);
+              var turbinetext = document.createTextNode(turbine[loc]);
+              newturbine.appendChild(turbinetext);
+              var newdist = newRow.insertCell(5);
+              var disttext = document.createTextNode(dist[loc]);
+              newdist.appendChild(disttext);
+              var newlat = newRow.insertCell(6);
+              var lattext = document.createTextNode(lat[loc]);
+              newlat.appendChild(lattext);
+              var newlong = newRow.insertCell(7);
+              var longtext = document.createTextNode(long[loc]);
+              newlong.appendChild(longtext);
+              var species = newRow.insertCell(8);
+              var speciestext = document.createTextNode(trials[i][1]);
+              species.appendChild(speciestext)
+            }
+            }
+
+          } else if (ED===undefined || SD===undefined) {
+            $("#alert").html("Start date and end date are required")
+          }else {
+            $("#alert").html("Start date must be before end date")
+          }
+
+        }
+
+      </script>
+  </body>
+</html>
